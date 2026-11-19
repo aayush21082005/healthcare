@@ -1,16 +1,35 @@
-# React + Vite
+# Healthcare Predictor
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+## Project structure
 
-Currently, two official plugins are available:
+- `frontend/` - React and Vite application
+- `backend/` - FastAPI API, database models, and ML model training data
+- `render.yaml` - Render backend deployment configuration
+- `frontend/vercel.json` - Vercel frontend routing configuration
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Local development
 
-## React Compiler
+Start the backend:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```powershell
+cd backend
+..\..\.venv\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000
+```
 
-## Expanding the Oxlint configuration
+Start the frontend:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+Copy `frontend/.env.example` to `frontend/.env` and set `VITE_API_URL`.
+
+## Deployment
+
+- Deploy `frontend/` as a Vercel project.
+- Set `VITE_API_URL` in Vercel to the Render backend URL.
+- Deploy `backend/` to Render using `render.yaml`.
+- Set `CORS_ORIGINS` on Render to the Vercel frontend URL.
+- Configure `TRAINING_DATA_PATH` in Render to point to a privately provided training CSV. Do not commit patient data. Without training data, deployment succeeds but prediction requests return an explicit model-unavailable error.

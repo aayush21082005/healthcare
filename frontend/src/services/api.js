@@ -1,31 +1,30 @@
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = (
+  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"
+).replace(/\/$/, "");
 
 async function apiRequest(path, options = {}) {
-let response;
+  let response;
 
-try {
-response = await fetch(`${API_URL}${path}`, options);
-} catch {
-throw new Error(
-"Backend se connection nahi ho raha. Check karo ki FastAPI port 8000 par running hai."
-);
-}
+  try {
+    response = await fetch(`${API_URL}${path}`, options);
+  } catch {
+    throw new Error(
+      "Backend se connection nahi ho raha. Check karo ki FastAPI port 8000 par running hai."
+    );
+  }
 
-const data = await response.json().catch(() => ({}));
+  const data = await response.json().catch(() => ({}));
 
-if (!response.ok) {
-const message =
-typeof data.detail === "string"
-? data.detail
-: `Request failed (${response.status})`;
+  if (!response.ok) {
+    const message =
+      typeof data.detail === "string"
+        ? data.detail
+        : `Request failed (${response.status})`;
 
-```
-throw new Error(message);
-```
+    throw new Error(message);
+  }
 
-}
-
-return data;
+  return data;
 }
 
 export const getPatients = () =>
@@ -63,12 +62,4 @@ body: JSON.stringify(patient),
 export const getPredictionHistory = () =>
 apiRequest("/predictions");
 
-export const getAnalytics = async () => {
-  const response = await fetch("http://127.0.0.1:8000/analytics");
-
-  if (!response.ok) {
-    throw new Error("Unable to fetch analytics");
-  }
-
-  return response.json();
-};
+export const getAnalytics = () => apiRequest("/analytics");

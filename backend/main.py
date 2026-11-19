@@ -1,8 +1,10 @@
 
 from pathlib import Path
 from io import BytesIO
+import os
 
 import pandas as pd
+from dotenv import load_dotenv
 from fastapi import (
     FastAPI,
     Depends,
@@ -24,6 +26,8 @@ from schemas import (
 )
 from ml_model import predict_patient_outcome
 
+load_dotenv(Path(__file__).resolve().parent / ".env")
+
 
 # --------------------------------------------------
 # APPLICATION SETUP
@@ -38,10 +42,12 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:5175",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:5175",
+        origin.strip()
+        for origin in os.getenv(
+            "CORS_ORIGINS",
+            "http://localhost:5173,http://127.0.0.1:5173",
+        ).split(",")
+        if origin.strip()
     ],
     allow_credentials=True,
     allow_methods=["*"],

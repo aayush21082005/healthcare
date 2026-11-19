@@ -11,7 +11,12 @@ node_modules
 dist
 dist-ssr
 *.local
-cleaned_patient_health.csv
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
 backend/healthcare*.db
 backend/model.pkl
 __pycache__/

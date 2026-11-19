@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 import joblib
 import pandas as pd
 
@@ -10,7 +11,12 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
 
 BASE_DIR = Path(__file__).resolve().parent
-DATA_PATH = BASE_DIR.parent / "cleaned_patient_health.csv"
+DATA_PATH = Path(
+    os.getenv(
+        "TRAINING_DATA_PATH",
+        str(BASE_DIR / "cleaned_patient_health.csv"),
+    )
+)
 MODEL_PATH = BASE_DIR / "model.pkl"
 
 FEATURES = [

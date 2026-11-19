@@ -1,11 +1,28 @@
+from pathlib import Path
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
+from dotenv import load_dotenv
 
-DATABASE_URL = "sqlite:///./healthcare.db"
+load_dotenv(Path(__file__).resolve().parent / ".env")
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if DATABASE_URL:
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+else:
+    database_path = Path(__file__).resolve().parent / "healthcare.db"
+    DATABASE_URL = f"sqlite:///{database_path}"
 
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"check_same_thread": False}
+    connect_args=(
+        {"check_same_thread": False}
+        if DATABASE_URL.startswith("sqlite:")
+        else {}
+    )
 )
 
 SessionLocal = sessionmaker(
