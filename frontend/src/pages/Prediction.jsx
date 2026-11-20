@@ -40,7 +40,11 @@ function Prediction() {
     <div>
       <div className="page-heading">
         <h1>Patient Outcome Prediction</h1>
-        <p>Generate an ML-based outcome prediction from patient attributes.</p>
+        <p>
+          Generate a demo ML estimate from patient attributes. This
+          synthetic-data model is not clinically validated and must not guide
+          patient care.
+        </p>
       </div>
 
       {error && <div className="error-message" role="alert">{error}</div>}

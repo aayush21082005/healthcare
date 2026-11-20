@@ -1,19 +1,27 @@
+import os
 from pathlib import Path
 import joblib
 import pandas as pd
 
-MODEL_PATH = Path(__file__).resolve().parent / "model.pkl"
+MODEL_PATH = Path(
+    os.getenv("MODEL_PATH")
+    or Path(__file__).resolve().parent / "model.pkl"
+).expanduser()
 
 _model = None
+
+
+def model_available():
+    return MODEL_PATH.is_file()
 
 
 def get_model():
     global _model
 
     if _model is None:
-        if not MODEL_PATH.exists():
+        if not model_available():
             raise FileNotFoundError(
-                "model.pkl not found. Run: python train_model.py"
+                "Trained model file is missing. Configure MODEL_PATH."
             )
         _model = joblib.load(MODEL_PATH)
 

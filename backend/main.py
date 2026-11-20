@@ -30,7 +30,7 @@ from schemas import (
     PredictionRequest,
     PredictionResponse,
 )
-from ml_model import predict_patient_outcome
+from ml_model import model_available, predict_patient_outcome
 
 load_dotenv(Path(__file__).resolve().parent / ".env")
 
@@ -99,8 +99,6 @@ def root():
 
 @app.get("/health")
 def health(db: Session = Depends(get_db)):
-    model_path = Path(__file__).resolve().parent / "model.pkl"
-
     try:
         db.execute(text("SELECT 1"))
     except Exception as exc:
@@ -116,7 +114,7 @@ def health(db: Session = Depends(get_db)):
     return {
         "api": "online",
         "database": "connected",
-        "ml_model_available": model_path.exists(),
+        "ml_model_available": model_available(),
     }
 
 
@@ -304,7 +302,7 @@ def predict(
         db.rollback()
         raise HTTPException(
             status_code=503,
-            detail="Trained model file is missing. Check backend/model.pkl.",
+            detail="Trained model is unavailable. Check the backend MODEL_PATH.",
         )
 
     except HTTPException:

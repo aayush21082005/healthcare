@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 import auth
+import ml_model
 from database import Base, get_db
 from main import app
 
@@ -116,3 +117,20 @@ def test_invalid_auth_configuration_fails_closed(client, monkeypatch):
 
     assert response.status_code == 503
     assert response.json()["detail"] == "Authentication is not configured."
+
+
+def test_health_reports_configured_model_file(client, monkeypatch, tmp_path):
+    model_path = tmp_path / "model.pkl"
+    monkeypatch.setattr(ml_model, "MODEL_PATH", model_path)
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json()["ml_model_available"] is False
+
+    model_path.touch()
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json()["ml_model_available"] is True
