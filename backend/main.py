@@ -37,6 +37,16 @@ load_dotenv(Path(__file__).resolve().parent / ".env")
 logger = logging.getLogger(__name__)
 MAX_UPLOAD_BYTES = 5 * 1024 * 1024
 MAX_UPLOAD_ROWS = 10_000
+SAFE_PREDICTION_ERROR_KEYS = {
+    "age",
+    "gender",
+    "demographics_region",
+    "medical_history_conditions",
+    "treatment_plan_medication",
+    "treatment_plan_therapy",
+    "outcome",
+    "probability",
+}
 
 
 # --------------------------------------------------
@@ -278,11 +288,13 @@ def predict(
     db: Session = Depends(get_db),
     _username: str = Depends(require_user),
 ):
+    failure_stage = "model inference"
     try:
         result = predict_patient_outcome(
             request.model_dump()
         )
 
+        failure_stage = "saving prediction"
         prediction = Prediction(
             patient_id=request.patient_id,
             outcome=str(result["outcome"]),
@@ -311,7 +323,19 @@ def predict(
 
     except Exception as exc:
         db.rollback()
-        logger.error("Patient outcome prediction failed (%s)", type(exc).__name__)
+        error_key = exc.args[0] if isinstance(exc, KeyError) and exc.args else None
+        if isinstance(error_key, str) and error_key in SAFE_PREDICTION_ERROR_KEYS:
+            logger.error(
+                "Prediction failed during %s (KeyError: %s)",
+                failure_stage,
+                error_key,
+            )
+        else:
+            logger.error(
+                "Patient outcome prediction failed during %s (%s)",
+                failure_stage,
+                type(exc).__name__,
+            )
         raise HTTPException(
             status_code=500,
             detail="Prediction failed. Check ml_model.py and backend logs.",
