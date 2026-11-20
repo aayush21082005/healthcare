@@ -2,6 +2,7 @@ services:
   - type: web
     name: healthcare-predictor-api
     runtime: python
+    plan: free
     rootDir: backend
     buildCommand: pip install -r requirements.txt && if [ -n "$TRAINING_DATA_PATH" ] && [ -f "$TRAINING_DATA_PATH" ]; then python train_model.py; else echo "No private training data configured; model training skipped"; fi
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
