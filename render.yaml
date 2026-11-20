@@ -20,8 +20,8 @@ services:
         sync: false
       - key: JWT_SECRET
         sync: false
-      - key: MODEL_PATH
-        value: /etc/secrets/model.pkl
+      - key: MODEL_BASE64_PATH
+        value: /etc/secrets/model.pkl.b64
       - key: TRAINING_DATA_PATH
         sync: false
 

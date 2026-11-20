@@ -41,10 +41,11 @@ Copy `frontend/.env.example` to `frontend/.env` and set `VITE_API_URL`.
   `JWT_SECRET` (at least 32 characters) as private Render environment variables.
   Do not commit credentials or password hashes. All patient, prediction, upload,
   and analytics routes require login; access tokens expire after 30 minutes.
-- Upload the approved trained `model.pkl` to Render as a Secret File named
-  `model.pkl`. `MODEL_PATH` points to `/etc/secrets/model.pkl`; do not commit the
-  model or patient CSV. Keep `TRAINING_DATA_PATH` unset unless an approved
-  synthetic or de-identified training CSV is privately available.
+- Base64-encode the approved trained `model.pkl` and upload the text as a Render
+  Secret File named `model.pkl.b64`. `MODEL_BASE64_PATH` points to
+  `/etc/secrets/model.pkl.b64`. Do not commit the model or patient CSV. Keep
+  `TRAINING_DATA_PATH` unset unless an approved synthetic or de-identified
+  training CSV is privately available.
 - This model was trained on synthetic data for demonstration only. Its
   predictions are not clinically validated and must not guide patient care.
 

@@ -1,3 +1,5 @@
+import base64
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -122,6 +124,7 @@ def test_invalid_auth_configuration_fails_closed(client, monkeypatch):
 def test_health_reports_configured_model_file(client, monkeypatch, tmp_path):
     model_path = tmp_path / "model.pkl"
     monkeypatch.setattr(ml_model, "MODEL_PATH", model_path)
+    monkeypatch.setattr(ml_model, "MODEL_BASE64_PATH", None)
 
     response = client.get("/health")
 
@@ -134,3 +137,21 @@ def test_health_reports_configured_model_file(client, monkeypatch, tmp_path):
 
     assert response.status_code == 200
     assert response.json()["ml_model_available"] is True
+
+
+def test_model_loader_decodes_base64_secret_file(monkeypatch, tmp_path):
+    model_bytes = b"serialized-model"
+    model_path = tmp_path / "model.pkl.b64"
+    model_path.write_text(base64.b64encode(model_bytes).decode("ascii"))
+    loaded_model = object()
+
+    def load_model(model_source):
+        assert model_source.read() == model_bytes
+        return loaded_model
+
+    monkeypatch.setattr(ml_model, "MODEL_PATH", tmp_path / "missing.pkl")
+    monkeypatch.setattr(ml_model, "MODEL_BASE64_PATH", model_path)
+    monkeypatch.setattr(ml_model, "_model", None)
+    monkeypatch.setattr(ml_model.joblib, "load", load_model)
+
+    assert ml_model.get_model() is loaded_model
