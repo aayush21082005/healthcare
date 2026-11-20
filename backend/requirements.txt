@@ -7,4 +7,5 @@ pandas
 scikit-learn
 joblib
 psycopg2-binary
+psycopg[binary]
 python-dotenv
