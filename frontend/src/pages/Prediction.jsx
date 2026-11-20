@@ -43,23 +43,23 @@ function Prediction() {
         <p>Generate an ML-based outcome prediction from patient attributes.</p>
       </div>
 
-      {error && <div className="error-message">{error}</div>}
+      {error && <div className="error-message" role="alert">{error}</div>}
 
       <div className="content-card">
         <form className="patient-form" onSubmit={handleSubmit}>
           <div className="form-field">
-            <label>Patient ID</label>
-            <input name="patient_id" value={form.patient_id} onChange={handleChange} required />
+            <label htmlFor="prediction-patient-id">Patient ID</label>
+            <input id="prediction-patient-id" name="patient_id" value={form.patient_id} onChange={handleChange} maxLength={64} required />
           </div>
 
           <div className="form-field">
-            <label>Age</label>
-            <input type="number" name="age" value={form.age} onChange={handleChange} required />
+            <label htmlFor="prediction-age">Age</label>
+            <input id="prediction-age" type="number" name="age" min="0" max="130" value={form.age} onChange={handleChange} required />
           </div>
 
           <div className="form-field">
-            <label>Gender</label>
-            <select name="gender" value={form.gender} onChange={handleChange} required>
+            <label htmlFor="prediction-gender">Gender</label>
+            <select id="prediction-gender" name="gender" value={form.gender} onChange={handleChange} required>
               <option value="">Select</option>
               <option value="female">Female</option>
               <option value="male">Male</option>
@@ -68,8 +68,8 @@ function Prediction() {
           </div>
 
           <div className="form-field">
-            <label>Region</label>
-            <select name="demographics_region" value={form.demographics_region} onChange={handleChange} required>
+            <label htmlFor="prediction-region">Region</label>
+            <select id="prediction-region" name="demographics_region" value={form.demographics_region} onChange={handleChange} required>
               <option value="">Select</option>
               <option value="urban">Urban</option>
               <option value="suburban">Suburban</option>
@@ -78,8 +78,8 @@ function Prediction() {
           </div>
 
           <div className="form-field">
-            <label>Medical History</label>
-            <select name="medical_history_conditions" value={form.medical_history_conditions} onChange={handleChange} required>
+            <label htmlFor="prediction-history">Medical History</label>
+            <select id="prediction-history" name="medical_history_conditions" value={form.medical_history_conditions} onChange={handleChange} required>
               <option value="">Select</option>
               <option value="Heart Disease">Heart Disease</option>
               <option value="Diabetes">Diabetes</option>
@@ -89,8 +89,8 @@ function Prediction() {
           </div>
 
           <div className="form-field">
-            <label>Medication</label>
-            <select name="treatment_plan_medication" value={form.treatment_plan_medication} onChange={handleChange} required>
+            <label htmlFor="prediction-medication">Medication</label>
+            <select id="prediction-medication" name="treatment_plan_medication" value={form.treatment_plan_medication} onChange={handleChange} required>
               <option value="">Select</option>
               <option value="Metoprolol">Metoprolol</option>
               <option value="Metformin">Metformin</option>
@@ -107,8 +107,8 @@ function Prediction() {
           </div>
 
           <div className="form-field">
-            <label>Therapy</label>
-            <select name="treatment_plan_therapy" value={form.treatment_plan_therapy} onChange={handleChange} required>
+            <label htmlFor="prediction-therapy">Therapy</label>
+            <select id="prediction-therapy" name="treatment_plan_therapy" value={form.treatment_plan_therapy} onChange={handleChange} required>
               <option value="">Select</option>
               <option value="Dietary Counseling">Dietary Counseling</option>
               <option value="Cognitive Behavioral Therapy">Cognitive Behavioral Therapy</option>

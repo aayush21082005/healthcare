@@ -65,23 +65,23 @@ export default function Analytics() {
   }, []);
 
   if (loading) {
-    return <main className="analytics-page"><p>Loading analytics...</p></main>;
+    return <div className="analytics-page" role="status"><p>Loading analytics...</p></div>;
   }
 
   if (error) {
     return (
-      <main className="analytics-page">
+      <div className="analytics-page">
         <h1>Healthcare Analytics</h1>
-        <div className="analytics-error">{error}</div>
-        <button className="analytics-refresh" onClick={loadAnalytics}>
+        <div className="analytics-error" role="alert">{error}</div>
+        <button className="analytics-refresh" onClick={loadAnalytics} type="button">
           Retry
         </button>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="analytics-page">
+    <div className="analytics-page">
       <div className="analytics-heading">
         <div>
           <p className="analytics-eyebrow">HEALTHCARE INSIGHTS</p>
@@ -89,7 +89,7 @@ export default function Analytics() {
           <p>Patient records and prediction distribution.</p>
         </div>
 
-        <button className="analytics-refresh" onClick={loadAnalytics}>
+        <button className="analytics-refresh" onClick={loadAnalytics} type="button">
           Refresh Data
         </button>
       </div>
@@ -135,6 +135,6 @@ export default function Analytics() {
         Analytics reflects records currently stored in the application database.
         Prediction outcomes are model outputs, not clinical diagnoses.
       </p>
-    </main>
+    </div>
   );
 }

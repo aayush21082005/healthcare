@@ -4,11 +4,13 @@ import {
   getPredictionHistory,
 } from "../services/api";
 
+const PAGE_SIZE = 100;
 
 function History() {
 
   const [history, setHistory] =
     useState([]);
+  const [offset, setOffset] = useState(0);
 
   const [loading, setLoading] =
     useState(true);
@@ -17,16 +19,17 @@ function History() {
     useState("");
 
 
-  const loadHistory = async () => {
+  const loadHistory = async (targetOffset = offset) => {
 
     try {
 
       setLoading(true);
 
       const data =
-        await getPredictionHistory();
+        await getPredictionHistory(targetOffset, PAGE_SIZE);
 
       setHistory(data);
+      setOffset(targetOffset);
 
       setError("");
 
@@ -78,7 +81,7 @@ function History() {
 
       {error && (
 
-        <div className="error-message">
+        <div className="error-message" role="alert">
           {error}
         </div>
 
@@ -106,9 +109,8 @@ function History() {
 
           <button
             className="secondary-button"
-            onClick={
-              loadHistory
-            }
+            onClick={() => loadHistory(offset)}
+            type="button"
           >
             Refresh
           </button>
@@ -118,7 +120,7 @@ function History() {
 
         {loading ? (
 
-          <div className="empty-table">
+          <div className="empty-table" role="status">
             Loading...
           </div>
 
@@ -145,24 +147,25 @@ function History() {
           <div className="table-container">
 
             <table>
+              <caption className="sr-only">Prediction history</caption>
 
               <thead>
 
                 <tr>
 
-                  <th>
+                  <th scope="col">
                     Patient ID
                   </th>
 
-                  <th>
+                  <th scope="col">
                     Outcome
                   </th>
 
-                  <th>
+                  <th scope="col">
                     Confidence
                   </th>
 
-                  <th>
+                  <th scope="col">
                     Date & Time
                   </th>
 
@@ -194,18 +197,11 @@ function History() {
                       <td>
 
                         <span
-                          className={
-                            `risk-badge ${
-                              item.outcome
-                                .toLowerCase()
-                                .replace(
-                                  " ",
-                                  "-"
-                                )
-                            }`
-                          }
+                          className={`risk-badge ${(item.outcome || "unknown")
+                            .toLowerCase()
+                            .replace(" ", "-")}`}
                         >
-                          {item.outcome}
+                          {item.outcome || "Unknown"}
                         </span>
 
                       </td>
@@ -237,6 +233,30 @@ function History() {
 
           </div>
 
+        )}
+
+        {!loading && (
+          <nav className="pagination-controls" aria-label="Prediction history pagination">
+            <button
+              className="secondary-button"
+              disabled={offset === 0}
+              onClick={() => loadHistory(Math.max(0, offset - PAGE_SIZE))}
+              type="button"
+            >
+              Previous
+            </button>
+            <span aria-live="polite">
+              Records {history.length ? offset + 1 : 0} to {offset + history.length}
+            </span>
+            <button
+              className="secondary-button"
+              disabled={history.length < PAGE_SIZE}
+              onClick={() => loadHistory(offset + PAGE_SIZE)}
+              type="button"
+            >
+              Next
+            </button>
+          </nav>
         )}
 
       </section>

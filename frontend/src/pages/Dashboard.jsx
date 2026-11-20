@@ -86,17 +86,17 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <main className="dashboard-page">
+      <div className="dashboard-page" role="status">
         <h1>Healthcare Dashboard</h1>
         <p>Loading dashboard data...</p>
-      </main>
+      </div>
     );
   }
 
   const recentPatients = patients.slice(0, 5);
 
   return (
-    <main className="dashboard-page">
+    <div className="dashboard-page">
       <div className="dashboard-heading">
         <div>
           <span className="dashboard-eyebrow">
@@ -118,7 +118,7 @@ export default function Dashboard() {
       </div>
 
       {error && (
-        <div className="dashboard-error">
+        <div className="dashboard-error" role="alert">
           {error}
         </div>
       )}
@@ -217,6 +217,6 @@ export default function Dashboard() {
         Dashboard analytics are generated from records currently
         stored in the application database.
       </p>
-    </main>
+    </div>
   );
 }

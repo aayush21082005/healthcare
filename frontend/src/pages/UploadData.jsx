@@ -210,7 +210,7 @@ function UploadData() {
 
       {error && (
 
-        <div className="error-message">
+        <div className="error-message" role="alert">
           {error}
         </div>
 
@@ -219,7 +219,7 @@ function UploadData() {
 
       {message && (
 
-        <div className="success-message">
+        <div className="success-message" role="status">
           {message}
         </div>
 

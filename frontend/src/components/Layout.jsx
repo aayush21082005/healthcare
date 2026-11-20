@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 
 import Sidebar from "./Sidebar";
 
-function Layout() {
+function Layout({ user, onLogout }) {
   return (
     <div className="app-layout">
 
@@ -20,14 +20,22 @@ function Layout() {
 
           <div className="user-area">
 
-            <div className="user-avatar">
-              A
+            <div className="user-avatar" aria-hidden="true">
+              {user?.username?.slice(0, 1).toUpperCase() || "U"}
             </div>
 
             <div>
-              <strong>Department User</strong>
-              <small>Healthcare Department</small>
+              <strong>{user?.username}</strong>
+              <small>Authorized user</small>
             </div>
+
+            <button
+              className="secondary-button logout-button"
+              onClick={onLogout}
+              type="button"
+            >
+              Sign out
+            </button>
 
           </div>
 

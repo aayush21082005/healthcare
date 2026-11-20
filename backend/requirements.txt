@@ -9,3 +9,4 @@ joblib
 psycopg2-binary
 psycopg[binary]
 python-dotenv
+PyJWT>=2.8,<3

@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
-import { addPatient, deletePatient, getPatients } from "../services/api";
+import { addPatient, getPatients } from "../services/api";
 import DataTable from "../components/DataTable";
+
+const PAGE_SIZE = 100;
 
 function PatientData() {
   const [patients, setPatients] = useState([]);
+  const [offset, setOffset] = useState(0);
   const [form, setForm] = useState({
     patient_id: "",
     age: "",
@@ -16,9 +19,11 @@ function PatientData() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  const loadPatients = async () => {
+  const loadPatients = async (targetOffset = offset) => {
     try {
-      setPatients(await getPatients());
+      setError("");
+      setPatients(await getPatients(targetOffset, PAGE_SIZE));
+      setOffset(targetOffset);
     } catch (err) {
       setError(err.message);
     }
@@ -44,6 +49,7 @@ function PatientData() {
       });
 
       setMessage("Patient saved successfully.");
+      setOffset(0);
       setForm({
         patient_id: "",
         age: "",
@@ -54,16 +60,7 @@ function PatientData() {
         treatment_plan_therapy: "",
       });
 
-      loadPatients();
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  const handleDelete = async (patientId) => {
-    try {
-      await deletePatient(patientId);
-      loadPatients();
+      loadPatients(0);
     } catch (err) {
       setError(err.message);
     }
@@ -86,24 +83,24 @@ function PatientData() {
         <p>Add and manage patient records.</p>
       </div>
 
-      {message && <div className="success-message">{message}</div>}
-      {error && <div className="error-message">{error}</div>}
+      {message && <div className="success-message" role="status">{message}</div>}
+      {error && <div className="error-message" role="alert">{error}</div>}
 
       <div className="content-card">
         <form className="patient-form" onSubmit={handleSubmit}>
           <div className="form-field">
-            <label>Patient ID</label>
-            <input name="patient_id" value={form.patient_id} onChange={handleChange} required />
+            <label htmlFor="patient-id">Patient ID</label>
+            <input id="patient-id" name="patient_id" value={form.patient_id} onChange={handleChange} maxLength={64} required />
           </div>
 
           <div className="form-field">
-            <label>Age</label>
-            <input type="number" name="age" value={form.age} onChange={handleChange} required />
+            <label htmlFor="patient-age">Age</label>
+            <input id="patient-age" type="number" name="age" min="0" max="130" value={form.age} onChange={handleChange} required />
           </div>
 
           <div className="form-field">
-            <label>Gender</label>
-            <select name="gender" value={form.gender} onChange={handleChange} required>
+            <label htmlFor="patient-gender">Gender</label>
+            <select id="patient-gender" name="gender" value={form.gender} onChange={handleChange} required>
               <option value="">Select</option>
               <option value="female">Female</option>
               <option value="male">Male</option>
@@ -112,8 +109,8 @@ function PatientData() {
           </div>
 
           <div className="form-field">
-            <label>Region</label>
-            <select name="demographics_region" value={form.demographics_region} onChange={handleChange} required>
+            <label htmlFor="patient-region">Region</label>
+            <select id="patient-region" name="demographics_region" value={form.demographics_region} onChange={handleChange} required>
               <option value="">Select</option>
               <option value="urban">Urban</option>
               <option value="suburban">Suburban</option>
@@ -122,8 +119,8 @@ function PatientData() {
           </div>
 
           <div className="form-field">
-            <label>Medical History</label>
-            <select name="medical_history_conditions" value={form.medical_history_conditions} onChange={handleChange} required>
+            <label htmlFor="patient-history">Medical History</label>
+            <select id="patient-history" name="medical_history_conditions" value={form.medical_history_conditions} onChange={handleChange} required>
               <option value="">Select</option>
               <option value="Heart Disease">Heart Disease</option>
               <option value="Diabetes">Diabetes</option>
@@ -133,8 +130,8 @@ function PatientData() {
           </div>
 
           <div className="form-field">
-            <label>Medication</label>
-            <select name="treatment_plan_medication" value={form.treatment_plan_medication} onChange={handleChange} required>
+            <label htmlFor="patient-medication">Medication</label>
+            <select id="patient-medication" name="treatment_plan_medication" value={form.treatment_plan_medication} onChange={handleChange} required>
               <option value="">Select</option>
               <option value="Metoprolol">Metoprolol</option>
               <option value="Metformin">Metformin</option>
@@ -151,8 +148,8 @@ function PatientData() {
           </div>
 
           <div className="form-field">
-            <label>Therapy</label>
-            <select name="treatment_plan_therapy" value={form.treatment_plan_therapy} onChange={handleChange} required>
+            <label htmlFor="patient-therapy">Therapy</label>
+            <select id="patient-therapy" name="treatment_plan_therapy" value={form.treatment_plan_therapy} onChange={handleChange} required>
               <option value="">Select</option>
               <option value="Dietary Counseling">Dietary Counseling</option>
               <option value="Cognitive Behavioral Therapy">Cognitive Behavioral Therapy</option>
@@ -167,6 +164,27 @@ function PatientData() {
       <div className="content-card">
         <h2>Stored Patients</h2>
         <DataTable columns={columns} data={patients} />
+        <nav className="pagination-controls" aria-label="Patient records pagination">
+          <button
+            className="secondary-button"
+            disabled={offset === 0}
+            onClick={() => loadPatients(Math.max(0, offset - PAGE_SIZE))}
+            type="button"
+          >
+            Previous
+          </button>
+          <span aria-live="polite">
+            Records {patients.length ? offset + 1 : 0} to {offset + patients.length}
+          </span>
+          <button
+            className="secondary-button"
+            disabled={patients.length < PAGE_SIZE}
+            onClick={() => loadPatients(offset + PAGE_SIZE)}
+            type="button"
+          >
+            Next
+          </button>
+        </nav>
       </div>
     </div>
   );

@@ -35,10 +35,10 @@ function Sidebar() {
   ];
 
   return (
-    <aside className="sidebar">
+    <aside className="sidebar" aria-label="Application sidebar">
 
       <div className="brand">
-        <div className="brand-icon">
+        <div className="brand-icon" aria-hidden="true">
           +
         </div>
 
@@ -54,7 +54,7 @@ function Sidebar() {
       </div>
 
 
-      <nav className="sidebar-menu">
+      <nav className="sidebar-menu" aria-label="Main navigation">
 
         {menuItems.map((item) => (
           <NavLink
@@ -66,7 +66,7 @@ function Sidebar() {
                 : "nav-item"
             }
           >
-            <span className="nav-icon">
+            <span className="nav-icon" aria-hidden="true">
               {item.icon}
             </span>
 
@@ -82,7 +82,7 @@ function Sidebar() {
       <div className="sidebar-bottom">
 
         <div className="system-status">
-          <span className="online-dot"></span>
+          <span className="online-dot" aria-hidden="true"></span>
 
           <div>
             <strong>System Online</strong>
